@@ -20,19 +20,56 @@ class _HomeViewState extends State<HomeView> {
   }
 
   final List<Widget> _cards = [];
+  final List<Widget> _pairCards = [];
   final List<int> _droppedCards = [];
   final List<int> _generatedNumbers = [];
-   final int totalNumberOfCard = 40;
+   final int totalNumberOfCard = 20;
 
+   void _initPairCard(int numberOfCards) {
+     double cardHeight = 400 / 2;
+     double cardWidth = 2500 / 20;
+     for (int i = 0; i < numberOfCards/2 ; i++) {
+       _pairCards.add(Positioned(
+           left: ((i >= numberOfCards/2) ?  i - numberOfCards/2 : i) * cardWidth,
+           top: 2.9 * cardHeight,
+           child: Draggable<int>(
+               data: _generatedNumbers[i]+1000,
+               feedback: Material(
+                 child:  _droppedCards.contains(_generatedNumbers[i]+1000) ? Container(): Card(
+                   elevation: 10,
+                   color: Colors.white,
+                   shape: RoundedRectangleBorder(
+                       borderRadius: BorderRadius.circular(10)),
+                   child: SizedBox(width: cardWidth, height: cardHeight, child:  Center(child: Text("${_generatedNumbers[i]}", style: const TextStyle(fontSize: 24),),)),
+                 ),
+               ), childWhenDragging: Container(),
+               child: _droppedCards.contains(_generatedNumbers[i]+1000) ? Container(): Card(
+                 elevation: 10,
+                 color: Colors.white,
+                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                 child: SizedBox(
+                   width: cardWidth,
+                   height: cardHeight,
+                   child: Center(
+                     child: Text(
+                       "${_generatedNumbers[i]}",
+                       style: const TextStyle(fontSize: 24),
+                     ),
+                   ),
+                 ),
+               ))
+       ),
+       );
+     }
+   }
 
   void _initCards(int numberOfCards) {
     double cardHeight = 400 / 2;
     double cardWidth = 2500 / 20;
-    _cards.clear();
-    for (int i = 0; i < numberOfCards ; i++) {
+    _pairCards.clear();
+    for (int i = 0; i < numberOfCards/2 ; i++) {
       _cards.add(Positioned(
         left: ((i >= numberOfCards/2) ?  i - numberOfCards/2 : i) * cardWidth,
-        top: (i >= numberOfCards/2) ?  2.9 * cardHeight : 0,
         child: Draggable<int>(
             data: _generatedNumbers[i],
             feedback: Material(
@@ -64,9 +101,33 @@ class _HomeViewState extends State<HomeView> {
     }
   }
 
+  _validateCardEquals() {
+    if (_droppedCards.isNotEmpty && _droppedCards.length == 2) {
+      setState(() {
+        if (_droppedCards.first == _droppedCards.last) {
+          // todo:  animation for correct answer if needed
+        }
+        else {
+          // todo: animation for wrong answer
+        }
+        _droppedCards.clear();
+      });
+    }
+  }
+
+  _initRefreshGeneratedNumber() {
+    int end = (totalNumberOfCard / 2) as int;
+    _generatedNumbers.clear();
+    List<int> numbers = generateShuffledNumbersWithoutRepeatBetweenRange(
+        1, end);
+    _generatedNumbers.addAll(numbers);
+    _generatedNumbers.addAll(numbers);
+  }
+
   _initCardNumber(int start, int totalCards) {
     try {
       int end = (totalCards / 2) as int;
+      _generatedNumbers.clear();
       List<int> numbers = generateShuffledNumbersWithoutRepeatBetweenRange(
           start, end);
       double limit = totalCards / end;
@@ -85,15 +146,18 @@ class _HomeViewState extends State<HomeView> {
   @override
   void initState() {
     super.initState();
-
     _initCardNumber(1, totalNumberOfCard);
     _initCards(totalNumberOfCard);
+    _initPairCard(totalNumberOfCard);
   }
 
 
   List<Widget> loadCardView() {
     List<Card> selectedCardView = [];
     for (var number in _droppedCards) {
+      if (number >= 1000) {
+        number = number - 1000;
+      }
       selectedCardView.add(Card(
         elevation: 10,
         color: Colors.white,
@@ -138,12 +202,17 @@ class _HomeViewState extends State<HomeView> {
             child: Stack(
               children: [
                 ... _cards,
+                ... _pairCards,
                 Padding(padding: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width/3,MediaQuery.of(context).orientation == Orientation.landscape && !_isFromWeb() ? MediaQuery.of(context).size.height/1.8 : MediaQuery.of(context).size.height/3, MediaQuery.of(context).size.width/3, MediaQuery.of(context).orientation == Orientation.landscape ? MediaQuery.of(context).size.height/1.8 : MediaQuery.of(context).size.height/3), child: DragTarget<int>(
                     onAcceptWithDetails: (data) {
                       debugPrint('Card $data dropped!');
                       setState(() {
                         _droppedCards.add(data.data);
+                        _validateCardEquals();
+                        _cards.clear();
+                        _pairCards.clear();
                         _initCards(totalNumberOfCard);
+                        _initPairCard(totalNumberOfCard);
                       });
                     },
                     builder: (context, candidateData, rejectedData) {
