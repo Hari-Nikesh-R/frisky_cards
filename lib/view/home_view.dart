@@ -18,42 +18,80 @@ class _HomeViewState extends State<HomeView> {
   }
 
   final List<Widget> _cards = [];
+  final List<int> _droppedCards = [];
+  final List<int> _generatedNumbers = [];
+
+
   void _initCards(int numberOfCards, int pair) {
     double cardHeight = 400 / 2;
     double cardWidth = 2500 / 20;
-    List<int> generatedNumber = generateShuffledNumbersWithoutRepeatBetweenRange(1, numberOfCards);
+    _cards.clear();
     for (int i = 0; i < numberOfCards ; i++) {
       _cards.add(Positioned(
-        left: ((i >= pair) ?  i - pair : i) * cardWidth / 2,
+        left: ((i >= pair) ?  i - pair : i) * cardWidth,
         top: (i >= pair) ? 2.5 * cardHeight : 0,
         child: Draggable<int>(
-            data: generatedNumber[i],
+            data: _generatedNumbers[i],
             feedback: Material(
-              child: Card(
+              child:  _droppedCards.contains(_generatedNumbers[i]) ? Container(): Card(
                 elevation: 10,
                 color: Colors.white,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
-                child: SizedBox(width: cardWidth, height: cardHeight, child:  Center(child: Text("${generatedNumber[i]}", style: const TextStyle(fontSize: 24),),)),
+                child: SizedBox(width: cardWidth, height: cardHeight, child:  Center(child: Text("${_generatedNumbers[i]}", style: const TextStyle(fontSize: 24),),)),
               ),
             ), childWhenDragging: Container(),
-            child: Card(
-            elevation: 10,
-            color: Colors.white,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10)),
-            child: SizedBox(width: cardWidth, height: cardHeight, child:  Center(child: Text("${generatedNumber[i]}", style: const TextStyle(fontSize: 24),),),),
-          ))
+           child: _droppedCards.contains(_generatedNumbers[i]) ? Container(): Card(
+          elevation: 10,
+          color: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          child: SizedBox(
+            width: cardWidth,
+            height: cardHeight,
+            child: Center(
+              child: Text(
+                "${_generatedNumbers[i]}",
+                style: const TextStyle(fontSize: 24),
+              ),
+            ),
+          ),
+        ))
         ),
       );
     }
   }
 
+  _initCardNumber(int start, int end) {
+   generateShuffledNumbersWithoutRepeatBetweenRange(start, end).forEach((element) {
+   _generatedNumbers.add(element);
+   });
+  }
+
   @override
   void initState() {
     super.initState();
+    _initCardNumber(1, 20);
     _initCards(20, 10);
   }
+
+
+  List<Widget> loadCardView() {
+    List<Card> selectedCardView = [];
+    for (var number in _droppedCards) {
+      selectedCardView.add(Card(
+        elevation: 10,
+        color: Colors.white,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10)),
+        child: SizedBox(width: 100,
+          height: 200,
+          child: Center(child: Text("$number",
+            style: const TextStyle(fontSize: 24),),),),
+      ));
+    }
+    return selectedCardView;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,14 +99,17 @@ class _HomeViewState extends State<HomeView> {
         children: [
           ... _cards,
           Positioned(
-            left: MediaQuery.of(context).size.width/3,
-            right: MediaQuery.of(context).size.width/3 ,
+            left: MediaQuery.of(context).size.width/4,
+            right: MediaQuery.of(context).size.width/4 ,
             top: MediaQuery.of(context).size.height/3,
             bottom: MediaQuery.of(context).size.height/3,
             child: DragTarget<int>(
               onAcceptWithDetails: (data) {
                 debugPrint('Card $data dropped!');
-                // Handle the card being dropped
+                setState(() {
+                  _droppedCards.add(data.data);
+                  _initCards(20, 10);
+                });
               },
               builder: (context, candidateData, rejectedData) {
                 return SizedBox(
@@ -79,7 +120,10 @@ class _HomeViewState extends State<HomeView> {
 
                   color: Colors.white.withOpacity(0.9),
                   child: Center(
-                    child: Text('Drop here'),
+                    child:Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: _droppedCards.isNotEmpty ? loadCardView() : [Text('Drop here')],
+                    ),
                   )),
                 );
               },
