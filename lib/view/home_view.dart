@@ -29,7 +29,7 @@ class _HomeViewState extends State<HomeView> {
     for (int i = 0; i < numberOfCards ; i++) {
       _cards.add(Positioned(
         left: ((i >= pair) ?  i - pair : i) * cardWidth,
-        top: (i >= pair) ? 2.5 * cardHeight : 0,
+        top: (i >= pair) ?  2.9 * cardHeight : 0,
         child: Draggable<int>(
             data: _generatedNumbers[i],
             feedback: Material(
@@ -95,42 +95,51 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
+      body: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Padding(padding: EdgeInsets.all(16),child: SizedBox(
+        width: MediaQuery.of(context).size.width,
+    child: Column(
+    children: [
+      SingleChildScrollView(scrollDirection: Axis.horizontal, child: Stack(
         children: [
-          ... _cards,
-          Positioned(
-            left: MediaQuery.of(context).size.width/4,
-            right: MediaQuery.of(context).size.width/4 ,
-            top: MediaQuery.of(context).size.height/3,
-            bottom: MediaQuery.of(context).size.height/3,
-            child: DragTarget<int>(
-              onAcceptWithDetails: (data) {
-                debugPrint('Card $data dropped!');
-                setState(() {
-                  _droppedCards.add(data.data);
-                  _initCards(20, 10);
-                });
-              },
-              builder: (context, candidateData, rejectedData) {
-                return SizedBox(
-                  width: 300,
-                  height: 200,
-                  child: Card(
-                  elevation: 10,
+          Container(
+            width: MediaQuery.of(context).size.width * 4,
+            height: MediaQuery.of(context).orientation == Orientation.landscape ? MediaQuery.of(context).size.height * 2 : MediaQuery.of(context).size.height * 1.5,
+            child: Stack(
+              children: [
+                ... _cards,
+                Padding(padding: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width/3,MediaQuery.of(context).orientation == Orientation.landscape ? MediaQuery.of(context).size.height/1.8 : MediaQuery.of(context).size.height/3, MediaQuery.of(context).size.width/3, MediaQuery.of(context).orientation == Orientation.landscape ? MediaQuery.of(context).size.height/1.8 : MediaQuery.of(context).size.height/3), child: DragTarget<int>(
+                    onAcceptWithDetails: (data) {
+                      debugPrint('Card $data dropped!');
+                      setState(() {
+                        _droppedCards.add(data.data);
+                        _initCards(20, 10);
+                      });
+                    },
+                    builder: (context, candidateData, rejectedData) {
+                      return SizedBox(
+                        width: 400,
+                        height: 250,
+                        child: Card(
+                            elevation: 10,
 
-                  color: Colors.white.withOpacity(0.9),
-                  child: Center(
-                    child:Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: _droppedCards.isNotEmpty ? loadCardView() : [Text('Drop here')],
-                    ),
-                  )),
-                );
-              },
+                            color: Colors.white.withOpacity(0.9),
+                            child: Center(
+                              child:Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: _droppedCards.isNotEmpty ? loadCardView() : [Text('Drop here')],
+                              ),
+                            )),
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
         ],
-      ),
+      ))])))),
     );
   }
 }
