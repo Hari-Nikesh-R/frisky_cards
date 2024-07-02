@@ -8,17 +8,9 @@ void main() {
   setupLocator();
   Widget app = MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: '/my_app',
+      initialRoute: '/home',
       routes: {
         '/home': (context) => const HomeView()
-        // '/learn_user_report': (context) => const LearnUserReportView()
       });
-  // runApp(MultiProvider(
-  //   providers: [
-  //     ChangeNotifierProvider(
-  //         create: (_) => HomeViewModel(homeRepo: locator<HomeRepository>())),
-  //   ],
-  //   child: app,
-  // ));
   runApp(app);
 }
