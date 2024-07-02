@@ -197,7 +197,7 @@ class _HomeViewState extends State<HomeView> {
       SingleChildScrollView(scrollDirection: Axis.horizontal, child: Stack(
         children: [
           Container(
-            width: totalNumberOfCard > 10 ? MediaQuery.of(context).size.width * totalNumberOfCard / 24 : MediaQuery.of(context).size.width * 2,
+            width: totalNumberOfCard > 10 && !_isFromWeb() ? MediaQuery.of(context).size.width * totalNumberOfCard / 24 : MediaQuery.of(context).size.width * 2,
             height: MediaQuery.of(context).orientation == Orientation.landscape ? MediaQuery.of(context).size.height * 2 : MediaQuery.of(context).size.height * 1.5,
             child: Stack(
               children: [
@@ -217,7 +217,7 @@ class _HomeViewState extends State<HomeView> {
                     },
                     builder: (context, candidateData, rejectedData) {
                       return SizedBox(
-                        width: totalNumberOfCard > 10 ? MediaQuery.of(context).size.width/(60/totalNumberOfCard) : MediaQuery.of(context).size.width/4,
+                        width: totalNumberOfCard > 10 && _isFromWeb() ? MediaQuery.of(context).size.width/(60/totalNumberOfCard) : MediaQuery.of(context).size.width,
                         height: 250,
                         child: Card(
                             elevation: 10,
