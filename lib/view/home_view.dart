@@ -22,16 +22,17 @@ class _HomeViewState extends State<HomeView> {
   final List<Widget> _cards = [];
   final List<int> _droppedCards = [];
   final List<int> _generatedNumbers = [];
+   final int totalNumberOfCard = 40;
 
 
-  void _initCards(int numberOfCards, int pair) {
+  void _initCards(int numberOfCards) {
     double cardHeight = 400 / 2;
     double cardWidth = 2500 / 20;
     _cards.clear();
     for (int i = 0; i < numberOfCards ; i++) {
       _cards.add(Positioned(
-        left: ((i >= pair) ?  i - pair : i) * cardWidth,
-        top: (i >= pair) ?  2.9 * cardHeight : 0,
+        left: ((i >= numberOfCards/2) ?  i - numberOfCards/2 : i) * cardWidth,
+        top: (i >= numberOfCards/2) ?  2.9 * cardHeight : 0,
         child: Draggable<int>(
             data: _generatedNumbers[i],
             feedback: Material(
@@ -63,17 +64,30 @@ class _HomeViewState extends State<HomeView> {
     }
   }
 
-  _initCardNumber(int start, int end) {
-   generateShuffledNumbersWithoutRepeatBetweenRange(start, end).forEach((element) {
-   _generatedNumbers.add(element);
-   });
+  _initCardNumber(int start, int totalCards) {
+    try {
+      int end = (totalCards / 2) as int;
+      List<int> numbers = generateShuffledNumbersWithoutRepeatBetweenRange(
+          start, end);
+      double limit = totalCards / end;
+      while (limit > 0) {
+        _generatedNumbers.addAll(numbers);
+        limit--;
+      }
+    }
+    catch (e) {
+      //todo: implement error page for card size.
+    }
   }
+
+
 
   @override
   void initState() {
     super.initState();
-    _initCardNumber(1, 20);
-    _initCards(20, 10);
+
+    _initCardNumber(1, totalNumberOfCard);
+    _initCards(totalNumberOfCard);
   }
 
 
@@ -93,6 +107,7 @@ class _HomeViewState extends State<HomeView> {
     }
     return selectedCardView;
   }
+
 
   bool _isFromWeb() {
     try{
@@ -118,7 +133,7 @@ class _HomeViewState extends State<HomeView> {
       SingleChildScrollView(scrollDirection: Axis.horizontal, child: Stack(
         children: [
           Container(
-            width: MediaQuery.of(context).size.width * 4,
+            width: totalNumberOfCard > 10 ? MediaQuery.of(context).size.width * totalNumberOfCard / 24 : MediaQuery.of(context).size.width * 2,
             height: MediaQuery.of(context).orientation == Orientation.landscape ? MediaQuery.of(context).size.height * 2 : MediaQuery.of(context).size.height * 1.5,
             child: Stack(
               children: [
@@ -128,12 +143,12 @@ class _HomeViewState extends State<HomeView> {
                       debugPrint('Card $data dropped!');
                       setState(() {
                         _droppedCards.add(data.data);
-                        _initCards(20, 10);
+                        _initCards(totalNumberOfCard);
                       });
                     },
                     builder: (context, candidateData, rejectedData) {
                       return SizedBox(
-                        width: 400,
+                        width: totalNumberOfCard > 10 ? MediaQuery.of(context).size.width/(60/totalNumberOfCard) : MediaQuery.of(context).size.width/4,
                         height: 250,
                         child: Card(
                             elevation: 10,
