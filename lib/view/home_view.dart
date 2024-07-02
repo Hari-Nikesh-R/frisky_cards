@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -92,12 +94,24 @@ class _HomeViewState extends State<HomeView> {
     return selectedCardView;
   }
 
+  bool _isFromWeb() {
+    try{
+      if(Platform.isAndroid||Platform.isIOS) {
+        return false;
+      } else {
+        return true;
+      }
+    } catch(e){
+      return true;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
-        child: Padding(padding: EdgeInsets.all(16),child: SizedBox(
+        child: Padding(padding: const EdgeInsets.all(16),child: SizedBox(
         width: MediaQuery.of(context).size.width,
     child: Column(
     children: [
@@ -109,7 +123,7 @@ class _HomeViewState extends State<HomeView> {
             child: Stack(
               children: [
                 ... _cards,
-                Padding(padding: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width/3,MediaQuery.of(context).orientation == Orientation.landscape ? MediaQuery.of(context).size.height/1.8 : MediaQuery.of(context).size.height/3, MediaQuery.of(context).size.width/3, MediaQuery.of(context).orientation == Orientation.landscape ? MediaQuery.of(context).size.height/1.8 : MediaQuery.of(context).size.height/3), child: DragTarget<int>(
+                Padding(padding: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width/3,MediaQuery.of(context).orientation == Orientation.landscape && !_isFromWeb() ? MediaQuery.of(context).size.height/1.8 : MediaQuery.of(context).size.height/3, MediaQuery.of(context).size.width/3, MediaQuery.of(context).orientation == Orientation.landscape ? MediaQuery.of(context).size.height/1.8 : MediaQuery.of(context).size.height/3), child: DragTarget<int>(
                     onAcceptWithDetails: (data) {
                       debugPrint('Card $data dropped!');
                       setState(() {
@@ -123,7 +137,6 @@ class _HomeViewState extends State<HomeView> {
                         height: 250,
                         child: Card(
                             elevation: 10,
-
                             color: Colors.white.withOpacity(0.9),
                             child: Center(
                               child:Row(
