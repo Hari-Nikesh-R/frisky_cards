@@ -8,7 +8,9 @@ class DustbinWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+        child: Container(
       margin: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: Colors.grey[300],
@@ -28,6 +30,6 @@ class DustbinWidget extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ));
   }
 }
