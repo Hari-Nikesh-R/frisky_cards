@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'card_widget.dart';
@@ -27,8 +28,11 @@ class ContainerWidget extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                isFull ? const Center(child: LoadContainerImage()) : const SizedBox(width: 140, height: 240, child: Center(child: Text('Drop Here'))),
-                ...cards.map((card) => CardWidget(card: card)),
+                isFull ? const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    child: Text('Find the match')) : const SizedBox(width: 140,
+                    height: 240, child: Center(child: Text('Drop Here'))),
+                ...cards.map((card) => CardWidget(card: card, inDragTarget: true,)),
               ],
             ),
           ),

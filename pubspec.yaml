@@ -36,6 +36,7 @@ dependencies:
   provider: ^6.0.5
   confetti: ^0.7.0
   lottie: ^3.1.2
+  fluttertoast: ^8.2.6
 
 
   # The following adds the Cupertino Icons font to your application.

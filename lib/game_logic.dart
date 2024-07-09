@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:frisky_card/view/card_widget.dart';
 
 class GameLogic {
@@ -81,20 +82,46 @@ class GameLogic {
     // for showing better luck animation
     resetGameFlag = true;
     dustbinCards = [];
+    showFailureToast();
     refreshCards();
     Future.delayed(const Duration(seconds: 2), () {
       resetGameFlag = false;
     });
   }
 
+  void showCelebratoryToast() {
+    Fluttertoast.showToast(
+      msg: "Congratulations!",
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.CENTER,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Colors.green,
+      textColor: Colors.white,
+      fontSize: 24.0,
+    );
+  }
+
+  void showFailureToast() {
+    Fluttertoast.showToast(
+      msg: "Please select correct one!",
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.CENTER,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Colors.red,
+      textColor: Colors.white,
+      fontSize: 24.0,
+    );
+  }
+
   void triggerCelebration() {
     celebrate = true;
     dustbinCards = [];
+    showCelebratoryToast();
+    Future.delayed(const Duration(seconds: 4), () {
+      celebrate = false;
+    });
     if (player2Cards.isEmpty && player1Cards.isEmpty) {
       _endGame();
     }
-    Future.delayed(const Duration(seconds: 2), () {
-      celebrate = false;
-    });
   }
 }

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:frisky_card/view/card_widget.dart';
 import 'package:frisky_card/view/celebration_widget.dart';
 import 'package:frisky_card/view/container_widget.dart';
+import 'package:frisky_card/view/success_dialog_widget.dart';
 
 import 'game_logic.dart';
 
@@ -104,6 +106,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -162,9 +165,9 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                                 .drive(Tween(begin: 1.0, end: 1.1)),
                             child: Draggable<CardData>(
                               data: card,
-                              child: CardWidget(card: card),
-                              feedback: CardWidget(card: card),
+                              feedback: CardWidget(card: card, inDragTarget: false,),
                               childWhenDragging: Container(),
+                              child: CardWidget(card: card, inDragTarget: false),
                             ),
                           );
                         },
@@ -184,8 +187,8 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                                 .drive(Tween(begin: 1.0, end: 1.1)),
                             child: Draggable<CardData>(
                               data: card,
-                              child: CardWidget(card: card),
-                              feedback: CardWidget(card: card),
+                              child: CardWidget(card: card, inDragTarget: false,),
+                              feedback: CardWidget(card: card, inDragTarget: false,),
                               childWhenDragging: Container(),
                             ),
                           );
@@ -198,6 +201,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
             const Center(
               child: CelebrationWidget(),
             ),
+
         ],
       ),
     );

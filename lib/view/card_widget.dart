@@ -8,13 +8,14 @@ class CardData {
 
 class CardWidget extends StatelessWidget {
   final CardData card;
+  final bool? inDragTarget;
 
-  CardWidget({required this.card});
+  const CardWidget({super.key, required this.card, this.inDragTarget});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(8.0),
+      margin: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
         color: card.color,
         borderRadius: BorderRadius.circular(8.0),
@@ -22,7 +23,7 @@ class CardWidget extends StatelessWidget {
       child: Center(
         child: Icon(
           card.shape,
-          size: 50,
+          size: inDragTarget??false ? 200 : 50,
           color: Colors.white,
         ),
       ),
