@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:frisky_card/view/card_widget.dart';
 import 'package:frisky_card/view/celebration_widget.dart';
@@ -63,6 +62,8 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     setState(() {
       if (_gameLogic.checkForMatch()) {
         _gameLogic.triggerCelebration();
+      } else if (_gameLogic.checkForParity()) {
+        _gameLogic.triggeredBetterLuckCelebration();
       }
     });
   }
@@ -76,6 +77,28 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       _player2Controller.stop();
       _player1Controller.repeat(reverse: true);
       _gameLogic.currentPlayer = 'player1';
+    }
+    _gameLogic.shuffleCards();
+  }
+
+  // handled only for 2 cards
+  void _undoCards() {
+    if (_gameLogic.dustbinCards.isNotEmpty) {
+      var card = _gameLogic.dustbinCards.last;
+      setState(() {
+        if (_gameLogic.currentPlayer == 'player1') {
+          _gameLogic.dustbinCards.remove(card);
+          if (_gameLogic.player2Cards.length < 3) {
+            _gameLogic.player2Cards.add(card);
+          }
+        } else {
+          _gameLogic.dustbinCards.remove(card);
+          if (_gameLogic.player1Cards.length < 3) {
+            _gameLogic.player1Cards.add(card);
+          }
+        }
+        _switchPlayer();
+      });
     }
   }
 
@@ -101,9 +124,13 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                           style: const TextStyle(fontSize: 16),
                         )),
                   ),
-                  Padding(padding: const EdgeInsets.symmetric(horizontal: 12), child: GestureDetector(onTap:() {
-                    _gameLogic.undoCards();
-                  }, child: const Icon(Icons.undo)))
+                  Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: GestureDetector(
+                          onTap: () {
+                            _undoCards();
+                          },
+                          child: const Icon(Icons.undo)))
                 ],
               ),
               Expanded(
@@ -111,6 +138,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                   builder: (context, candidateData, rejectedData) {
                     return DustbinWidget(
                       cards: _gameLogic.dustbinCards,
+                      isFull: _gameLogic.dustbinCards.isNotEmpty
                     );
                   },
                   onAcceptWithDetails: (card) {

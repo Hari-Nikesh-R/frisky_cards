@@ -3,8 +3,9 @@ import 'card_widget.dart';
 
 class DustbinWidget extends StatelessWidget {
   final List<CardData> cards;
+  final bool isFull;
 
-  DustbinWidget({required this.cards});
+  const DustbinWidget({super.key, required this.cards, required this.isFull, });
 
   @override
   Widget build(BuildContext context) {
@@ -20,13 +21,13 @@ class DustbinWidget extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.delete,
               size: 100,
               color: Colors.red,
             ),
-            Text('Drop Here'),
-            ...cards.map((card) => CardWidget(card: card)).toList(),
+            isFull ? const Text("Choose the match") : const Text('Drop Here'),
+            ...cards.map((card) => CardWidget(card: card)),
           ],
         ),
       ),
