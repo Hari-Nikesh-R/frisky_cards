@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:frisky_card/view/card_widget.dart';
 import 'package:frisky_card/view/celebration_widget.dart';
-import 'package:frisky_card/view/dustbin_widget.dart';
+import 'package:frisky_card/view/container_widget.dart';
 
 import 'game_logic.dart';
 
 void main() {
   runApp(const CardMatchGame());
+  // runApp(const LoadContainerImage());
 }
 
 class CardMatchGame extends StatelessWidget {
@@ -20,6 +21,7 @@ class CardMatchGame extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: GameScreen(),
+      // home: LoadContainerImage(),
     );
   }
 }
@@ -133,20 +135,18 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                           child: const Icon(Icons.undo)))
                 ],
               ),
-              Expanded(
-                child: DragTarget<CardData>(
-                  builder: (context, candidateData, rejectedData) {
-                    return DustbinWidget(
+              DragTarget<CardData>(
+                builder: (context, candidateData, rejectedData) {
+                  return ContainerWidget(
                       cards: _gameLogic.dustbinCards,
-                      isFull: _gameLogic.dustbinCards.isNotEmpty
-                    );
-                  },
-                  onAcceptWithDetails: (card) {
-                    _handleCardDropped(card.data, _gameLogic.currentPlayer);
-                    _switchPlayer();
-                  },
-                ),
+                      isFull: _gameLogic.dustbinCards.isNotEmpty);
+                },
+                onAcceptWithDetails: (card) {
+                  _handleCardDropped(card.data, _gameLogic.currentPlayer);
+                  _switchPlayer();
+                },
               ),
+              const Padding(padding: EdgeInsets.all(24)),
               _gameLogic.currentPlayer == 'player1'
                   ? Expanded(
                       child: GridView.builder(
