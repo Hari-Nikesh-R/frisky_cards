@@ -9,9 +9,9 @@ class GameLogic {
   ];
 
   List<CardData> player2Cards = [
-    CardData(color: Colors.orange, shape: Icons.circle),
-    CardData(color: Colors.purple, shape: Icons.star),
-    CardData(color: Colors.yellow, shape: Icons.square),
+    CardData(color: Colors.red, shape: Icons.circle),
+    CardData(color: Colors.blue, shape: Icons.star),
+    CardData(color: Colors.green, shape: Icons.square),
   ];
 
   List<CardData> dustbinCards = [];
@@ -36,9 +36,22 @@ class GameLogic {
     return false;
   }
 
+  void endGame() {}
+
+  void undoCards() {
+    var card = dustbinCards.last;
+
+    if (currentPlayer == 'player1') {
+      player2Cards.add(card);
+    } else {
+      player1Cards.add(card);
+    }
+  }
+
   void triggerCelebration() {
     celebrate = true;
-    Future.delayed(Duration(seconds: 2), () {
+    dustbinCards = [];
+    Future.delayed(const Duration(seconds: 2), () {
       celebrate = false;
     });
   }

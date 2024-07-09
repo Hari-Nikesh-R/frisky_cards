@@ -1,9 +1,9 @@
-import 'dart:async';
-
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 
 class CelebrationWidget extends StatefulWidget {
+  const CelebrationWidget({super.key});
+
   @override
   _CelebrationWidgetState createState() => _CelebrationWidgetState();
 }
@@ -15,25 +15,8 @@ class _CelebrationWidgetState extends State<CelebrationWidget> {
   void initState() {
     super.initState();
     _controllerCenter =
-        ConfettiController(duration: const Duration(seconds: 10));
+        ConfettiController(duration: const Duration(seconds: 5));
     _controllerCenter.play();
-    startTimer();
-  }
-
-  late Timer _timer;
-  int _start = 2;
-
-  void startTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_start > 0) {
-        setState(() {
-          _start--;
-        });
-      } else {
-        _timer.cancel();
-        Navigator.pop(context);
-      }
-    });
   }
 
   @override

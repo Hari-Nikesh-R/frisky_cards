@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:frisky_card/view/card_widget.dart';
 import 'package:frisky_card/view/celebration_widget.dart';
@@ -6,10 +7,12 @@ import 'package:frisky_card/view/dustbin_widget.dart';
 import 'game_logic.dart';
 
 void main() {
-  runApp(CardMatchGame());
+  runApp(const CardMatchGame());
 }
 
 class CardMatchGame extends StatelessWidget {
+  const CardMatchGame({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -23,6 +26,8 @@ class CardMatchGame extends StatelessWidget {
 }
 
 class GameScreen extends StatefulWidget {
+  const GameScreen({super.key});
+
   @override
   _GameScreenState createState() => _GameScreenState();
 }
@@ -37,11 +42,11 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     super.initState();
     _player1Controller = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 1),
+      duration: const Duration(seconds: 1),
     );
     _player2Controller = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 1),
+      duration: const Duration(seconds: 1),
     );
     _player1Controller.repeat(reverse: true);
   }
@@ -77,13 +82,30 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Card Match Game'),
-      ),
+      appBar: AppBar(title: const Text('Card Match Game'), centerTitle: true),
       body: Stack(
         children: [
           Column(
             children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Card(
+                    elevation: 12,
+                    child: Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: MediaQuery.of(context).size.width / 3,
+                            vertical: 12),
+                        child: Text(
+                          _gameLogic.currentPlayer.toUpperCase(),
+                          style: const TextStyle(fontSize: 16),
+                        )),
+                  ),
+                  Padding(padding: const EdgeInsets.symmetric(horizontal: 12), child: GestureDetector(onTap:() {
+                    _gameLogic.undoCards();
+                  }, child: const Icon(Icons.undo)))
+                ],
+              ),
               Expanded(
                 child: DragTarget<CardData>(
                   builder: (context, candidateData, rejectedData) {
@@ -91,59 +113,61 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                       cards: _gameLogic.dustbinCards,
                     );
                   },
-                  onAccept: (card) {
-                    _handleCardDropped(card, _gameLogic.currentPlayer);
+                  onAcceptWithDetails: (card) {
+                    _handleCardDropped(card.data, _gameLogic.currentPlayer);
                     _switchPlayer();
                   },
                 ),
               ),
-              _gameLogic.currentPlayer == 'player1' ?
-              Expanded(
-                child: GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                  ),
-                  itemCount: _gameLogic.player1Cards.length,
-                  itemBuilder: (context, index) {
-                    final card = _gameLogic.player1Cards[index];
-                    return ScaleTransition(
-                      scale:
-                          _player1Controller.drive(Tween(begin: 1.0, end: 1.1)),
-                      child: Draggable<CardData>(
-                        data: card,
-                        child: CardWidget(card: card),
-                        feedback: CardWidget(card: card),
-                        childWhenDragging: Container(),
+              _gameLogic.currentPlayer == 'player1'
+                  ? Expanded(
+                      child: GridView.builder(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                        ),
+                        itemCount: _gameLogic.player1Cards.length,
+                        itemBuilder: (context, index) {
+                          final card = _gameLogic.player1Cards[index];
+                          return ScaleTransition(
+                            scale: _player1Controller
+                                .drive(Tween(begin: 1.0, end: 1.1)),
+                            child: Draggable<CardData>(
+                              data: card,
+                              child: CardWidget(card: card),
+                              feedback: CardWidget(card: card),
+                              childWhenDragging: Container(),
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
-              ) :
-              Expanded(
-                child: GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                  ),
-                  itemCount: _gameLogic.player2Cards.length,
-                  itemBuilder: (context, index) {
-                    final card = _gameLogic.player2Cards[index];
-                    return ScaleTransition(
-                      scale:
-                          _player2Controller.drive(Tween(begin: 1.0, end: 1.1)),
-                      child: Draggable<CardData>(
-                        data: card,
-                        child: CardWidget(card: card),
-                        feedback: CardWidget(card: card),
-                        childWhenDragging: Container(),
+                    )
+                  : Expanded(
+                      child: GridView.builder(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                        ),
+                        itemCount: _gameLogic.player2Cards.length,
+                        itemBuilder: (context, index) {
+                          final card = _gameLogic.player2Cards[index];
+                          return ScaleTransition(
+                            scale: _player2Controller
+                                .drive(Tween(begin: 1.0, end: 1.1)),
+                            child: Draggable<CardData>(
+                              data: card,
+                              child: CardWidget(card: card),
+                              feedback: CardWidget(card: card),
+                              childWhenDragging: Container(),
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
-              ),
+                    ),
             ],
           ),
           if (_gameLogic.celebrate)
-            Center(
+            const Center(
               child: CelebrationWidget(),
             ),
         ],
